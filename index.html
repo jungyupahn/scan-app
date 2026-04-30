@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>재고부족 스캔</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f4f7fb;
+}
+.container{
+  max-width:480px;
+  margin:auto;
+  padding:20px;
+}
+.card{
+  background:#fff;
+  padding:16px;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom:16px;
+}
+h3{margin:0 0 8px;}
+input,textarea{
+  width:100%;
+  padding:12px;
+  border-radius:8px;
+  border:1px solid #ddd;
+}
+.checkbox-group{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.checkbox-group label{
+  padding:10px;
+  background:#eef3ff;
+  border-radius:8px;
+}
+button{
+  width:100%;
+  padding:14px;
+  background:#2f6fed;
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+<h3>작업자명 (필수)</h3>
+<input id="worker">
+</div>
+
+<div class="card">
+<h3>로케이션 (필수)</h3>
+<input id="location">
+</div>
+
+<div class="card">
+<h3>상태 선택 (선택)</h3>
+<div class="checkbox-group">
+<label><input type="checkbox" value="재고없음"> 재고없음</label>
+<label><input type="checkbox" value="일부부족"> 일부부족</label>
+<label><input type="checkbox" value="다른상품"> 다른상품</label>
+<label><input type="checkbox" value="빈박스"> 빈박스</label>
+</div>
+</div>
+
+<div class="card">
+<h3>메모</h3>
+<textarea id="memo"></textarea>
+</div>
+
+<button onclick="submitData()">등록</button>
+
+</div>
+
+<script>
+const URL = "https://script.google.com/macros/s/AKfycbxkHkf3TcPoxJx1Y840j09IrdOFtewAkn6EkW1Jp7zLFpSYHn_6fUwVVO6nj6fW80an2A/exec";
+
+function getStatus(){
+  return Array.from(document.querySelectorAll('input[type=checkbox]:checked'))
+    .map(el=>el.value).join(', ');
+}
+
+function submitData(){
+  const worker = document.getElementById('worker').value;
+  const location = document.getElementById('location').value;
+  const memo = document.getElementById('memo').value;
+  const status = getStatus();
+
+  if(!worker){alert('작업자명 필수'); return;}
+  if(!location){alert('로케이션 필수'); return;}
+
+  const payload = {
+    worker, location, memo, status,
+    timestamp: new Date().toISOString()
+  };
+
+  fetch(URL + "?data=" + encodeURIComponent(JSON.stringify(payload)))
+    .then(()=>alert("등록 완료"))
+    .catch(()=>alert("전송 실패"));
+}
+</script>
+
+</body>
+</html>
